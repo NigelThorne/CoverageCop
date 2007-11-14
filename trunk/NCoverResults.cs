@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-
 namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
@@ -13,40 +12,25 @@ namespace NCoverCop
         private readonly double totalVisited = 0.0;
         private readonly List<INCoverNode> unvisited = new List<INCoverNode>();
 
-        public NCoverResults(string coverageFile)
+        public NCoverResults(IEnumerable<INCoverNode> nodes)
         {
-            XmlDocument results = new XmlDocument();
-            if (File.Exists(coverageFile))
+            foreach (INCoverNode node in nodes)
             {
-                try
+                if (!node.IsExcluded)
                 {
-                    results.LoadXml(File.ReadAllText(coverageFile));
-                }
-                catch (Exception ex)
-                {
-                    Console.Out.WriteLine(ex.Message);
-                }
+                    total++;
 
-                foreach (XmlNode node in results.SelectNodes("//seqpnt"))
-                {
-                    INCoverNode nnode = new NCoverNode(node);
-                    if (!nnode.IsExcluded)
+                    if (node.IsVisited)
                     {
-                        total++;
-
-                        if (nnode.IsVisited)
-                        {
-                            totalVisited++;
-                        }
-                        else
-                        {
-                            unvisited.Add(nnode);
-                        }
+                        totalVisited++;
+                    }
+                    else
+                    {
+                        unvisited.Add(node);
                     }
                 }
-
-                percentageCovered = Math.Round(totalVisited/total, 5);
             }
+            percentageCovered = Math.Round(totalVisited/total, 5);
         }
 
         #region INCoverResults Members
@@ -103,7 +87,7 @@ namespace NCoverCop
                     }
                 }
             }
-            if( lastNode != null) condensed.Add(lastNode);
+            if (lastNode != null) condensed.Add(lastNode);
 
             string output = "";
             foreach (INCoverNode node in condensed)
@@ -126,5 +110,28 @@ namespace NCoverCop
         }
 
         #endregion
+
+        public static NCoverResults Open(string coverageFile)
+        {
+            List<INCoverNode> nodes = new List<INCoverNode>();
+            XmlDocument results = new XmlDocument();
+            if (File.Exists(coverageFile))
+            {
+                try
+                {
+                    results.LoadXml(File.ReadAllText(coverageFile));
+                }
+                catch (Exception ex)
+                {
+                    Console.Out.WriteLine(ex.Message);
+                }
+
+                foreach (XmlNode node in results.SelectNodes("//seqpnt"))
+                {
+                    nodes.Add(new NCoverNode(node));
+                }
+            }
+            return new NCoverResults(nodes);
+        }
     }
 }

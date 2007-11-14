@@ -52,7 +52,7 @@ namespace NCoverCop
                     throw new BuildException("The coverageFile specified does not exist");
 
                 Threshold threshold =
-                    new Threshold(new NCoverResults(previousCoverageFile), new NCoverResults(coverageFile), MinPercentage);
+                    new Threshold(NCoverResults.Open(previousCoverageFile), NCoverResults.Open(coverageFile), MinPercentage);
 
                 if (threshold.Passed)
                 {
