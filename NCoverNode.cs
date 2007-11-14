@@ -1,54 +1,50 @@
+using System;
 using System.Xml;
-
 
 namespace NCoverCop
 {
     public class NCoverNode : INCoverNode
     {
-        private readonly XmlNode node;
-        private readonly int line;
         private readonly int column;
-        private readonly int endLine;
-        private readonly int endColumn;
         private readonly string document;
+        private readonly int endColumn;
+        private readonly int endLine;
+        private readonly bool excluded;
+        private readonly int line;
+        private readonly bool visited;
 
         public NCoverNode(XmlNode node)
         {
-            this.node = node;
-            line = GetIntAttribute("line");
-            endLine = GetIntAttribute("endline");
-            column = GetIntAttribute("column");
-            endColumn = GetIntAttribute("endcolumn");
-            document = GetStringAttribute("document");
+            line = GetIntAttribute("line", node);
+            endLine = GetIntAttribute("endline", node);
+            column = GetIntAttribute("column", node);
+            endColumn = GetIntAttribute("endcolumn", node);
+            document = GetStringAttribute("document", node);
+            visited = GetIntAttribute("visitcount", node) > 0;
+            excluded = GetBoolAttribute("excluded", node);
         }
 
-        public NCoverNode(int line, int column, int endLine, int endColumn, string document)
+        public NCoverNode(int line, int column, int endLine, int endColumn, string document, bool visited, bool excluded)
         {
             this.line = line;
             this.column = column;
             this.endLine = endLine;
             this.endColumn = endColumn;
             this.document = document;
+            this.visited = visited;
+            this.excluded = excluded;
         }
 
-        private int GetIntAttribute(string name)
-        {
-            return node.Attributes[name] != null ? int.Parse(node.Attributes[name].Value) : 0;
-        }
-
-        private string GetStringAttribute(string name)
-        {
-            return node.Attributes[name] != null ? node.Attributes[name].Value : "";
-        }
+        #region INCoverNode Members
 
         public bool IsExcluded
         {
-            get { return node.Attributes["excluded"] != null && node.Attributes["excluded"].Value != "false"; }
+            get { return excluded; }
         }
 
         public bool IsVisited
         {
-            get { return (node.Attributes["visitcount"] != null && int.Parse(node.Attributes["visitcount"].Value) > 0); }
+            get { return visited; }
         }
 
         public int Line
@@ -89,17 +85,34 @@ namespace NCoverCop
         public bool Follows(INCoverNode node)
         {
             return node.Document == Document &&
-                (node.Line == EndLine || node.Line == EndLine+1);
+                   (node.EndLine == Line || node.EndLine + 1 == Line);
         }
 
         public INCoverNode ExtendWith(INCoverNode node)
         {
-            if(!node.Follows(this))
-                throw new System.NotImplementedException();
+            if (!node.Follows(this))
+                throw new NotImplementedException();
             else
             {
-                return new NCoverNode(Line,Column,node.EndLine,node.EndColumn,Document);
+                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visited, excluded);
             }
+        }
+
+        #endregion
+
+        private static int GetIntAttribute(string name, XmlNode node)
+        {
+            return node.Attributes[name] != null ? int.Parse(node.Attributes[name].Value) : 0;
+        }
+
+        private static string GetStringAttribute(string name, XmlNode node)
+        {
+            return node.Attributes[name] != null ? node.Attributes[name].Value : "";
+        }
+
+        private static bool GetBoolAttribute(string name, XmlNode node)
+        {
+            return node.Attributes[name] != null && node.Attributes[name].Value != "false";
         }
 
         public override string ToString()
