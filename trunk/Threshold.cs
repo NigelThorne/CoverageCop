@@ -39,10 +39,18 @@ namespace NCoverCop
             {
                 if (Passed)
                 {
-                    return
-                        string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}",
+                    if(results.PercentageCovered>= RequiredPercentage)
+                    {
+                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}",
                                       results.Total,
                                       results.TotalVisited, results.PercentageCovered, RequiredPercentage);
+                    }
+                    else
+                    {
+                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.",
+                                      results.Total,
+                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage);                        
+                    }
                 }
                 else
                 {
