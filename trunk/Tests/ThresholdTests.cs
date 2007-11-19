@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace NCoverCop.Tests
@@ -23,14 +24,14 @@ namespace NCoverCop.Tests
         [SetUp]
         public void SetUp()
         {
-            uncovered1 = new NCoverNode(1, 0, 1, 1, "doc", false, false);
-            uncovered2 = new NCoverNode(2, 0, 2, 1, "doc", false, false);
-            uncovered3 = new NCoverNode(3, 0, 3, 1, "doc", false, false);
-            uncovered4 = new NCoverNode(4, 0, 4, 1, "doc", false, false);
-            covered1 = new NCoverNode(1, 0, 1, 1, "doc", true, false);
-            covered2 = new NCoverNode(2, 0, 2, 1, "doc", true, false);
-            covered3 = new NCoverNode(3, 0, 3, 1, "doc", true, false);
-            covered4 = new NCoverNode(4, 0, 4, 1, "doc", true, false);
+            uncovered1 = new NCoverNode(1, 0, 1, 1, "doc", 0, false, new Regex(".*"));
+            uncovered2 = new NCoverNode(2, 0, 2, 1, "doc", 0, false, new Regex(".*"));
+            uncovered3 = new NCoverNode(3, 0, 3, 1, "doc", 0, false, new Regex(".*"));
+            uncovered4 = new NCoverNode(4, 0, 4, 1, "doc", 0, false, new Regex(".*"));
+            covered1 = new NCoverNode(1, 0, 1, 1, "doc", 1, false, new Regex(".*"));
+            covered2 = new NCoverNode(2, 0, 2, 1, "doc", 1, false, new Regex(".*"));
+            covered3 = new NCoverNode(3, 0, 3, 1, "doc", 1, false, new Regex(".*"));
+            covered4 = new NCoverNode(4, 0, 4, 1, "doc", 1, false, new Regex(".*"));
 
             results100percent = new NCoverResults(new NCoverNode[] {covered1, covered2, covered3});
             results66percent = new NCoverResults(new NCoverNode[] {uncovered1, covered2, covered3});

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
+
 
 namespace NCoverCop
 {
@@ -111,7 +113,7 @@ namespace NCoverCop
 
         #endregion
 
-        public static NCoverResults Open(string coverageFile)
+        public static NCoverResults Open(string coverageFile, Regex partOfPathToKeep)
         {
             List<INCoverNode> nodes = new List<INCoverNode>();
             XmlDocument results = new XmlDocument();
@@ -128,7 +130,7 @@ namespace NCoverCop
 
                 foreach (XmlNode node in results.SelectNodes("//seqpnt"))
                 {
-                    nodes.Add(new NCoverNode(node));
+                    nodes.Add(new NCoverNode(node, partOfPathToKeep));
                 }
             }
             return new NCoverResults(nodes);
