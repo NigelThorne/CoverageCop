@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -13,6 +14,7 @@ namespace NCoverCop
         private string previousCoverageFile;
         private double minPercentage;
         private bool autoUpdate = true;
+        private string sectionOfFilePathToCompareRegex = ".*";
 
         [TaskAttribute("coverageFile", Required = true)]
         [StringValidator(AllowEmpty = false)]
@@ -44,6 +46,13 @@ namespace NCoverCop
             set { autoUpdate = value; }
         }
 
+        [TaskAttributeAttribute("sectionOfFilePathToCompareRegex")]
+        public string SectionOfFilePathToCompareRegex
+        {
+            get { return sectionOfFilePathToCompareRegex; }
+            set { sectionOfFilePathToCompareRegex = value; }
+        }
+
         protected override void ExecuteTask()
         {
             try
@@ -52,7 +61,7 @@ namespace NCoverCop
                     throw new BuildException("The coverageFile specified does not exist");
 
                 Threshold threshold =
-                    new Threshold(NCoverResults.Open(previousCoverageFile), NCoverResults.Open(coverageFile), MinPercentage);
+                    new Threshold(NCoverResults.Open(previousCoverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), NCoverResults.Open(coverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), MinPercentage);
 
                 if (threshold.Passed)
                 {

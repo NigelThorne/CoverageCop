@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace NCoverCop
@@ -10,29 +11,32 @@ namespace NCoverCop
         private readonly int endColumn;
         private readonly int endLine;
         private readonly bool excluded;
+        private readonly Regex documentPathIgnoreMatcher;
         private readonly int line;
-        private readonly bool visited;
+        private readonly int visitCount;
 
-        public NCoverNode(XmlNode node)
-        {
-            line = GetIntAttribute("line", node);
-            endLine = GetIntAttribute("endline", node);
-            column = GetIntAttribute("column", node);
-            endColumn = GetIntAttribute("endcolumn", node);
-            document = GetStringAttribute("document", node);
-            visited = GetIntAttribute("visitcount", node) > 0;
-            excluded = GetBoolAttribute("excluded", node);
-        }
+        public NCoverNode(XmlNode node, Regex documentPathIgnoreMatcher):
+            this(
+            GetIntAttribute("line", node),
+            GetIntAttribute("column", node),
+            GetIntAttribute("endline", node),
+            GetIntAttribute("endcolumn", node),
+            GetStringAttribute("document", node),
+            GetIntAttribute("visitcount", node),
+            GetBoolAttribute("excluded", node),
+            documentPathIgnoreMatcher)
+        {}
 
-        public NCoverNode(int line, int column, int endLine, int endColumn, string document, bool visited, bool excluded)
+        public NCoverNode(int line, int column, int endLine, int endColumn, string document, int visitCount, bool excluded, Regex documentPathIgnoreMatcher)
         {
             this.line = line;
             this.column = column;
             this.endLine = endLine;
             this.endColumn = endColumn;
-            this.document = document;
-            this.visited = visited;
+            this.document = documentPathIgnoreMatcher.Match(document).Value;
+            this.visitCount = visitCount;
             this.excluded = excluded;
+            this.documentPathIgnoreMatcher = documentPathIgnoreMatcher;
         }
 
         #region INCoverNode Members
@@ -44,7 +48,7 @@ namespace NCoverCop
 
         public bool IsVisited
         {
-            get { return visited; }
+            get { return visitCount>0; }
         }
 
         public int Line
@@ -94,7 +98,7 @@ namespace NCoverCop
                 throw new NotImplementedException();
             else
             {
-                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visited, excluded);
+                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, documentPathIgnoreMatcher);
             }
         }
 
