@@ -41,15 +41,15 @@ namespace NCoverCop
                 {
                     if(results.PercentageCovered>= RequiredPercentage)
                     {
-                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}",
+                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}\n{4}",
                                       results.Total,
-                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage);
+                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage, results.ReportNewUntestedCode(previous));
                     }
                     else
                     {
-                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.",
+                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.\n{4}",
                                       results.Total,
-                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage);                        
+                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage, results.ReportNewUntestedCode(previous));                        
                     }
                 }
                 else

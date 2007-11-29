@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 
+
 namespace NCoverCop.Tests
 {
     [TestFixture]
@@ -10,6 +11,7 @@ namespace NCoverCop.Tests
         private NCoverResults results50percentOf4Lines;
         private NCoverResults results50percentOf2Lines;
         private NCoverResults results66percent;
+        private NCoverResults results33percent;
 
         private NCoverNode uncovered1;
         private NCoverNode uncovered2;
@@ -35,6 +37,7 @@ namespace NCoverCop.Tests
 
             results100percent = new NCoverResults(new NCoverNode[] {covered1, covered2, covered3});
             results66percent = new NCoverResults(new NCoverNode[] {uncovered1, covered2, covered3});
+            results33percent = new NCoverResults(new NCoverNode[] {covered1, uncovered2, uncovered3});
             results50percentOf4Lines = new NCoverResults(new NCoverNode[] {uncovered1, uncovered2, covered3, covered4});
             results50percentOf2Lines = new NCoverResults(new NCoverNode[] {uncovered1, covered2});
         }
@@ -43,28 +46,42 @@ namespace NCoverCop.Tests
         public void Message_Pass_WhenNewPercentageBeatsMinThreshold()
         {
             Threshold threshold = new Threshold(results50percentOf4Lines, results100percent, 0.60);
-            Assert.AreEqual("NCoverCopTask: PASSED: 3 not excluded, 3 hit, 100.00 % >= 60.00 %", threshold.Message);
+            Assert.AreEqual("NCoverCopTask: PASSED: 3 not excluded, 3 hit, 100.00 % >= 60.00 %\n", threshold.Message);
         }
 
         [Test]
         public void Message_Pass_WhenNewPercentageBeatsMinThresholdAndPreviousPercentage()
         {
             Threshold threshold = new Threshold(results50percentOf4Lines, results100percent, 0.30);
-            Assert.AreEqual("NCoverCopTask: PASSED: 3 not excluded, 3 hit, 100.00 % >= 50.00 %", threshold.Message);
+            Assert.AreEqual("NCoverCopTask: PASSED: 3 not excluded, 3 hit, 100.00 % >= 50.00 %\n", threshold.Message);
         }
 
         [Test]
         public void Message_Pass_WhenPercentageDropsButUncoveredCodeDoesNotGrow()
         {
             Threshold threshold = new Threshold(results66percent, results50percentOf2Lines, 0.30);
-            Assert.AreEqual("NCoverCopTask: PASSED: 2 not excluded, 1 hit, 50.00 % >= 66.67 % but uncovered code has not grown.", threshold.Message);
+            Assert.AreEqual(
+                "NCoverCopTask: PASSED: 2 not excluded, 1 hit, 50.00 % >= 66.67 % but uncovered code has not grown.\n",
+                threshold.Message);
+        }
+
+
+        [Test]
+        public void Message_PassWithDiff_WhenPercentageIncreasesButNewUncoveredCodeIntroduced()
+        {
+            NCoverResults uncoverLine4ButCoverLine3 = new NCoverResults(new NCoverNode[] { covered1, uncovered2, covered3, uncovered4 });
+            Threshold threshold = new Threshold(results33percent, uncoverLine4ButCoverLine3, 0.30);
+            Assert.AreEqual(
+                "NCoverCopTask: PASSED: 4 not excluded, 2 hit, 50.00 % >= 33.33 %\nLine 4-4 in doc\n",
+                threshold.Message);
         }
 
         [Test]
         public void Message_Fail_WhenPercentageDropsAndUncoveredCodeGrows()
         {
             Threshold threshold = new Threshold(results66percent, results50percentOf4Lines, 0.30);
-            Assert.AreEqual("NCoverCopTask: FAILED: 4 not excluded, 2 hit, 50.00 % < 66.67 %\nLine 2-2 in doc\n", threshold.Message);
+            Assert.AreEqual("NCoverCopTask: FAILED: 4 not excluded, 2 hit, 50.00 % < 66.67 %\nLine 2-2 in doc\n",
+                            threshold.Message);
         }
     }
 }
