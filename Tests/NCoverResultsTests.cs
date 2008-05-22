@@ -18,10 +18,10 @@ namespace NCoverCop.Tests
         [SetUp]
         public  void SetUp()
         {
-            node1to1 = new NCoverNode(1, 0, 1, 1, "doc1", 0, false, new Regex(".*"));
-            node2to2 = new NCoverNode(2, 0, 2, 1, "doc1", 0, false, new Regex(".*"));
-            node4to4 = new NCoverNode(4, 0, 4, 1, "doc1", 0, false, new Regex(".*"));
-            node5to5 = new NCoverNode(5, 0, 5, 1, "doc1", 0, false, new Regex(".*"));
+            node1to1 = new NCoverNode(1, 0, 1, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node2to2 = new NCoverNode(2, 0, 2, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node4to4 = new NCoverNode(4, 0, 4, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node5to5 = new NCoverNode(5, 0, 5, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
 
             resultsNone = new NCoverResults(new NCoverNode[] {});
             resultsAll = new NCoverResults(new NCoverNode[] { node1to1, node2to2, node4to4, node5to5 });

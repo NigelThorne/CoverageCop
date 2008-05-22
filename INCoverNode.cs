@@ -11,6 +11,12 @@ namespace NCoverCop
         int EndColumn { get; }
         string Document { get; }
 
+        string Method { get; }
+
+        int MethodLineOffset { get; }
+
+        string Klass { get; }
+
         bool Matches(INCoverNode ncoverNode);
         bool Follows(INCoverNode node);
         INCoverNode ExtendWith(INCoverNode node);
