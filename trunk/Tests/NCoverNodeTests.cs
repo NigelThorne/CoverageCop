@@ -15,10 +15,10 @@ namespace NCoverCop.Tests
         [SetUp]
         public  void SetUp()
         {
-            node1to1 = new NCoverNode(1, 0, 1, 1, "doc1", 0, false, new Regex(".*"));
-            node1to5 = new NCoverNode(1, 0, 5, 1, "doc1", 0, false, new Regex(".*"));
-            node5to10 = new NCoverNode(5, 0, 10, 1, "doc1", 0, false, new Regex(".*"));
-            node6to10 = new NCoverNode(6, 0, 10, 1, "doc1", 0, false, new Regex(".*"));
+            node1to1 = new NCoverNode(1, 0, 1, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node1to5 = new NCoverNode(1, 0, 5, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node5to10 = new NCoverNode(5, 0, 10, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
+            node6to10 = new NCoverNode(6, 0, 10, 1, "doc1", 0, false, "m", 0, "k", new Regex(".*"));
 
         }
 
@@ -62,14 +62,14 @@ namespace NCoverCop.Tests
         [Test]
         public void Document_IsTruncatedByMatchingRegEx()
         {
-            NCoverNode node = new NCoverNode(1, 2, 3, 4, @"C:/Manticore_Debug/trunk/SomeFile.cs", 1, false, new Regex("trunk.*"));
+            NCoverNode node = new NCoverNode(1, 2, 3, 4, @"C:/Manticore_Debug/trunk/SomeFile.cs", 1, false, "m", 0, "k2", new Regex("trunk.*"));
             Assert.AreEqual(@"trunk/SomeFile.cs", node.Document);
         }
 
         [Test]
         public void Document_IsTakesTheBiggestMatchingRegEx()
         {
-            NCoverNode node = new NCoverNode(1, 2, 3, 4, @"C:/Manticore_Debug/trunk/trunk/trunkSomeFile.cs", 1, false, new Regex("trunk.*"));
+            NCoverNode node = new NCoverNode(1, 2, 3, 4, @"C:/Manticore_Debug/trunk/trunk/trunkSomeFile.cs", 1, false, "m", 0, "k3", new Regex("trunk.*"));
             Assert.AreEqual(@"trunk/trunk/trunkSomeFile.cs", node.Document);
         }
     }

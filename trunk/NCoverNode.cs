@@ -11,23 +11,30 @@ namespace NCoverCop
         private readonly int endColumn;
         private readonly int endLine;
         private readonly bool excluded;
+        private readonly string method;
+        private readonly int methodLineOffset;
+        private readonly string klass;
         private readonly Regex documentPathIgnoreMatcher;
         private readonly int line;
         private readonly int visitCount;
+        private string[] split;
 
         public NCoverNode(XmlNode node, Regex documentPathIgnoreMatcher):
             this(
-            GetIntAttribute("line", node),
-            GetIntAttribute("column", node),
-            GetIntAttribute("endline", node),
-            GetIntAttribute("endcolumn", node),
-            GetStringAttribute("document", node),
-            GetIntAttribute("visitcount", node),
-            GetBoolAttribute("excluded", node),
+            XmlNodeHelper.GetIntAttribute("line", node),
+            XmlNodeHelper.GetIntAttribute("column", node),
+            XmlNodeHelper.GetIntAttribute("endline", node),
+            XmlNodeHelper.GetIntAttribute("endcolumn", node),
+            XmlNodeHelper.GetStringAttribute("document", node),
+            XmlNodeHelper.GetIntAttribute("visitcount", node),
+            XmlNodeHelper.GetBoolAttribute("excluded", node),
+            XmlNodeHelper.GetStringAttribute("name", node.ParentNode),
+            XmlNodeHelper.GetIntAttribute("line", node.ParentNode.FirstChild),
+            XmlNodeHelper.GetStringAttribute("class", node.ParentNode),
             documentPathIgnoreMatcher)
         {}
 
-        public NCoverNode(int line, int column, int endLine, int endColumn, string document, int visitCount, bool excluded, Regex documentPathIgnoreMatcher)
+        public NCoverNode(int line, int column, int endLine, int endColumn, string document, int visitCount, bool excluded, string method, int firstLineOfMethod, string klass, Regex documentPathIgnoreMatcher)
         {
             this.line = line;
             this.column = column;
@@ -36,7 +43,10 @@ namespace NCoverCop
             this.document = documentPathIgnoreMatcher.Match(document).Value;
             this.visitCount = visitCount;
             this.excluded = excluded;
+            this.method = method;
+            this.klass = klass;
             this.documentPathIgnoreMatcher = documentPathIgnoreMatcher;
+            this.methodLineOffset = line - firstLineOfMethod;
         }
 
         #region INCoverNode Members
@@ -76,20 +86,33 @@ namespace NCoverCop
             get { return document; }
         }
 
+        public string Method
+        {
+            get { return method; }
+        }
+
+        public int MethodLineOffset
+        {
+            get { return methodLineOffset; }
+        }
+
+        public string Klass
+        {
+            get { return klass; }
+        }
+
         public bool Matches(INCoverNode ncoverNode)
         {
             return
-                ncoverNode.Line == Line &&
-                ncoverNode.Column == Column &&
-                ncoverNode.EndLine == EndLine &&
-                ncoverNode.EndColumn == EndColumn &&
-                ncoverNode.Document == Document;
+                ncoverNode.Method == Method &&
+                ncoverNode.MethodLineOffset == MethodLineOffset &&
+                ncoverNode.Klass == Klass;
         }
 
         public bool Follows(INCoverNode node)
         {
             return node.Document == Document &&
-                   (node.EndLine == Line || node.EndLine + 1 == Line);
+                   (node.EndLine == Line || node.EndLine + 1 == Line) && node.Method == Method && node.Klass == Klass;
         }
 
         public INCoverNode ExtendWith(INCoverNode node)
@@ -98,30 +121,33 @@ namespace NCoverCop
                 throw new NotImplementedException();
             else
             {
-                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, documentPathIgnoreMatcher);
+                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, method, methodLineOffset + line, klass, documentPathIgnoreMatcher);
             }
         }
 
         #endregion
 
-        private static int GetIntAttribute(string name, XmlNode node)
+        public override string ToString()
+        {
+            return string.Format("{4} {3} \t\t Line {0}-{1} in {2}", Line, EndLine, document, method.Substring(method.LastIndexOf(".") + 1), klass.Substring(klass.LastIndexOf(".") + 1));
+        }
+    }
+
+    public class XmlNodeHelper
+    {
+        public static int GetIntAttribute(string name, XmlNode node)
         {
             return node.Attributes[name] != null ? int.Parse(node.Attributes[name].Value) : 0;
         }
 
-        private static string GetStringAttribute(string name, XmlNode node)
+        public static string GetStringAttribute(string name, XmlNode node)
         {
             return node.Attributes[name] != null ? node.Attributes[name].Value : "";
         }
 
-        private static bool GetBoolAttribute(string name, XmlNode node)
+        public static bool GetBoolAttribute(string name, XmlNode node)
         {
             return node.Attributes[name] != null && node.Attributes[name].Value != "false";
-        }
-
-        public override string ToString()
-        {
-            return string.Format("Line {0}-{1} in {2}", Line, EndLine, document);
         }
     }
 }

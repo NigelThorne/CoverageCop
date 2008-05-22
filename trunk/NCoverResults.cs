@@ -37,24 +37,21 @@ namespace NCoverCop
 
         #region INCoverResults Members
 
+        public bool HasMatchingUnvisitedNode(INCoverNode node)
+        {
+            foreach (INCoverNode unvisitedNode in unvisited)
+            {
+                if (unvisitedNode.Matches(node))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public double PercentageCovered
         {
             get { return percentageCovered; }
-        }
-
-        public double Total
-        {
-            get { return total; }
-        }
-
-        public double TotalVisited
-        {
-            get { return totalVisited; }
-        }
-
-        public double TotalUnvisited
-        {
-            get { return Total - TotalVisited; }
         }
 
         public string ReportNewUntestedCode(INCoverResults previous)
@@ -99,16 +96,19 @@ namespace NCoverCop
             return output;
         }
 
-        public bool HasMatchingUnvisitedNode(INCoverNode node)
+        public double Total
         {
-            foreach (INCoverNode unvisitedNode in unvisited)
-            {
-                if (unvisitedNode.Matches(node))
-                {
-                    return true;
-                }
-            }
-            return false;
+            get { return total; }
+        }
+
+        public double TotalUnvisited
+        {
+            get { return Total - TotalVisited; }
+        }
+
+        public double TotalVisited
+        {
+            get { return totalVisited; }
         }
 
         #endregion
