@@ -17,7 +17,6 @@ namespace NCoverCop
         private readonly Regex documentPathIgnoreMatcher;
         private readonly int line;
         private readonly int visitCount;
-        private string[] split;
 
         public NCoverNode(XmlNode node, Regex documentPathIgnoreMatcher):
             this(
@@ -130,24 +129,6 @@ namespace NCoverCop
         public override string ToString()
         {
             return string.Format("{4} {3} \t\t Line {0}-{1} in {2}", Line, EndLine, document, method.Substring(method.LastIndexOf(".") + 1), klass.Substring(klass.LastIndexOf(".") + 1));
-        }
-    }
-
-    public class XmlNodeHelper
-    {
-        public static int GetIntAttribute(string name, XmlNode node)
-        {
-            return node.Attributes[name] != null ? int.Parse(node.Attributes[name].Value) : 0;
-        }
-
-        public static string GetStringAttribute(string name, XmlNode node)
-        {
-            return node.Attributes[name] != null ? node.Attributes[name].Value : "";
-        }
-
-        public static bool GetBoolAttribute(string name, XmlNode node)
-        {
-            return node.Attributes[name] != null && node.Attributes[name].Value != "false";
         }
     }
 }
