@@ -32,14 +32,14 @@ namespace NCoverCop.Tests
         [Test]
         public void ReportNewUntestedCode_DisplaysUntestedLines()
         {
-            Assert.AreEqual("Line 2-2 in doc1\nLine 5-5 in doc1\n", resultsAll.ReportNewUntestedCode(results1to1n4to4));
+            Assert.AreEqual("k m \t\t Line 2-2 in doc1\nk m \t\t Line 5-5 in doc1\n", resultsAll.ReportNewUntestedCode(results1to1n4to4));
             Assert.AreEqual("", results1to1n4to4.ReportNewUntestedCode(resultsAll));
         }
 
         [Test]
         public void ReportNewUntestedCode_JoinsBlocksOfuntestedCodeIntoASingleEntry()
         {
-            Assert.AreEqual("Line 1-2 in doc1\nLine 4-5 in doc1\n", resultsAll.ReportNewUntestedCode(resultsNone));
+            Assert.AreEqual("k m \t\t Line 1-2 in doc1\nk m \t\t Line 4-5 in doc1\n", resultsAll.ReportNewUntestedCode(resultsNone));
         }
 
     }
