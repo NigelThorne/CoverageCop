@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Xml;
-
 
 namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
     {
+        private readonly NCoverFileParser parser = new NCoverFileParser();
         private readonly double percentageCovered = 0.0;
         private readonly double total = 0.0;
         private readonly double totalVisited = 0.0;
@@ -112,28 +109,5 @@ namespace NCoverCop
         }
 
         #endregion
-
-        public static NCoverResults Open(string coverageFile, Regex partOfPathToKeep)
-        {
-            List<INCoverNode> nodes = new List<INCoverNode>();
-            XmlDocument results = new XmlDocument();
-            if (File.Exists(coverageFile))
-            {
-                try
-                {
-                    results.LoadXml(File.ReadAllText(coverageFile));
-                }
-                catch (Exception ex)
-                {
-                    Console.Out.WriteLine(ex.Message);
-                }
-
-                foreach (XmlNode node in results.SelectNodes("//seqpnt"))
-                {
-                    nodes.Add(new NCoverNode(node, partOfPathToKeep));
-                }
-            }
-            return new NCoverResults(nodes);
-        }
     }
 }

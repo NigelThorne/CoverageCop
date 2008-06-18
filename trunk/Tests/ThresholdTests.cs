@@ -72,7 +72,7 @@ namespace NCoverCop.Tests
             NCoverResults uncoverLine4ButCoverLine3 = new NCoverResults(new NCoverNode[] { covered1, uncovered2, covered3, uncovered4 });
             Threshold threshold = new Threshold(results33percent, uncoverLine4ButCoverLine3, 0.30);
             Assert.AreEqual(
-                "NCoverCopTask: PASSED: 4 not excluded, 2 hit, 50.00 % >= 33.33 %\nLine 4-4 in doc\n",
+                "NCoverCopTask: PASSED: 4 not excluded, 2 hit, 50.00 % >= 33.33 %\nk m \t\t Line 4-4 in doc\n",
                 threshold.Message);
         }
 
@@ -80,7 +80,7 @@ namespace NCoverCop.Tests
         public void Message_Fail_WhenPercentageDropsAndUncoveredCodeGrows()
         {
             Threshold threshold = new Threshold(results66percent, results50percentOf4Lines, 0.30);
-            Assert.AreEqual("NCoverCopTask: FAILED: 4 not excluded, 2 hit, 50.00 % < 66.67 %\nLine 2-2 in doc\n",
+            Assert.AreEqual("NCoverCopTask: FAILED: 4 not excluded, 2 hit, 50.00 % < 66.67 %\nk m \t\t Line 2-2 in doc\n",
                             threshold.Message);
         }
     }
