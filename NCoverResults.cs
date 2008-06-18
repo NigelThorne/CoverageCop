@@ -5,7 +5,6 @@ namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
     {
-        private readonly NCoverFileParser parser = new NCoverFileParser();
         private readonly double percentageCovered = 0.0;
         private readonly double total = 0.0;
         private readonly double totalVisited = 0.0;
