@@ -15,6 +15,8 @@ namespace NCoverCop
             {
                 try
                 {
+                    //System.Diagnostics.Debugger.Break();
+
                     XmlDocument document = new XmlDocument();
                     document.LoadXml(File.ReadAllText(coverageFile));
                     return new NCoverResults(BestParser(document).ParseXmlDocument(document, partOfPathToKeep));
@@ -31,7 +33,7 @@ namespace NCoverCop
         private INCoverXmlParser BestParser(XmlNode document)
         {
             XmlNode node = document.SelectSingleNode("//coverage");
-            string version = XmlNodeHelper.GetStringAttribute("profileVersion", node);
+            string version = XmlNodeHelper.GetStringAttribute("profilerVersion", node);
             return Int32.Parse(version.Split('.')[0]) >= 2 ? parsers[1] : parsers[0];
         }
     }
