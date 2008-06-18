@@ -60,10 +60,10 @@ namespace NCoverCop
                 if (!File.Exists(coverageFile))
                     throw new BuildException("The coverageFile specified does not exist");
 
-                NCoverFileParser parser = new NCoverFileParser();
+                NCoverFileReader reader = new NCoverFileReader();
 
                 Threshold threshold =
-                    new Threshold(parser.Open(previousCoverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), parser.Open(coverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), MinPercentage);
+                    new Threshold(reader.Open(previousCoverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), reader.Open(coverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), MinPercentage);
 
                 if (threshold.Passed)
                 {
