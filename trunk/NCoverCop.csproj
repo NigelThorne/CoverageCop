@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="INCoverNode.cs" />
     <Compile Include="INCoverResults.cs" />
+    <Compile Include="NCoverFileParser.cs" />
     <Compile Include="NCoverNode.cs" />
     <Compile Include="NCoverCopTask.cs" />
     <Compile Include="NCoverResults.cs" />
