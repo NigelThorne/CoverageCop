@@ -53,6 +53,11 @@ namespace NCoverCop
             set { sectionOfFilePathToCompareRegex = value; }
         }
 
+        public void ExecuteInTesting()
+        {
+            this.ExecuteTask();
+        }
+
         protected override void ExecuteTask()
         {
             try
@@ -63,11 +68,16 @@ namespace NCoverCop
                 NCoverFileReader reader = new NCoverFileReader();
 
                 Threshold threshold =
-                    new Threshold(reader.Open(previousCoverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), reader.Open(coverageFile, new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)), MinPercentage);
+                    new Threshold(
+                        reader.Open(previousCoverageFile,
+                                    new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                        reader.Open(coverageFile,
+                                    new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                        MinPercentage);
 
                 if (threshold.Passed)
                 {
-                    Log(Level.Info, threshold.Message);                    
+                    //Log(Level.Info, threshold.Message);
                     if (autoUpdate)
                     {
                         File.Copy(coverageFile, previousCoverageFile, true);
