@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
+
 namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
     {
-        private readonly double percentageCovered = 0.0;
         private readonly double total = 0.0;
         private readonly double totalVisited = 0.0;
         private readonly List<INCoverNode> unvisited = new List<INCoverNode>();
@@ -28,7 +28,6 @@ namespace NCoverCop
                     }
                 }
             }
-            percentageCovered = Math.Round(totalVisited/total, 5);
         }
 
         #region INCoverResults Members
@@ -47,7 +46,10 @@ namespace NCoverCop
 
         public double PercentageCovered
         {
-            get { return percentageCovered; }
+            get
+            {
+                return total == 0 ? 0 : Math.Round(totalVisited / total, 5);
+            }
         }
 
         public string ReportNewUntestedCode(INCoverResults previous)

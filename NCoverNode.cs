@@ -100,12 +100,9 @@ namespace NCoverCop
 
         public INCoverNode ExtendWith(INCoverNode node)
         {
-            if (!node.Follows(this))
-                throw new NotImplementedException();
-            else
-            {
-                return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, method, methodLineOffset + line, klass, documentPathIgnoreMatcher);
-            }
+            if (!node.Follows(this)) throw new NotImplementedException();
+
+            return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, method, methodLineOffset + line, klass, documentPathIgnoreMatcher);
         }
 
         #endregion
