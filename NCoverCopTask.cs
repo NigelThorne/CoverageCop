@@ -77,7 +77,7 @@ namespace NCoverCop
 
                 if (threshold.Passed)
                 {
-                    //Log(Level.Info, threshold.Message);
+                    Log(Level.Info, threshold.Message);
                     if (autoUpdate)
                     {
                         File.Copy(coverageFile, previousCoverageFile, true);
