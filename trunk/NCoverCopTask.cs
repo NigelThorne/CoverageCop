@@ -15,6 +15,7 @@ namespace NCoverCop
         private double minPercentage;
         private bool autoUpdate = true;
         private string sectionOfFilePathToCompareRegex = ".*";
+        private bool skipLogging = false;
 
         [TaskAttribute("coverageFile", Required = true)]
         [StringValidator(AllowEmpty = false)]
@@ -55,6 +56,7 @@ namespace NCoverCop
 
         public void ExecuteInTesting()
         {
+            skipLogging = true;
             this.ExecuteTask();
         }
 
@@ -62,14 +64,11 @@ namespace NCoverCop
         {
             try
             {
-                if (!File.Exists(coverageFile))
-                    throw new BuildException("The coverageFile specified does not exist");
-
                 NCoverFileReader reader = new NCoverFileReader();
 
                 Threshold threshold =
                     new Threshold(
-                        reader.Open(previousCoverageFile,
+                        SafeOpen(reader, previousCoverageFile,
                                     new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
                         reader.Open(coverageFile,
                                     new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
@@ -77,7 +76,7 @@ namespace NCoverCop
 
                 if (threshold.Passed)
                 {
-                    Log(Level.Info, threshold.Message);
+                    LLog(Level.Info, threshold.Message);
                     if (autoUpdate)
                     {
                         File.Copy(coverageFile, previousCoverageFile, true);
@@ -92,6 +91,28 @@ namespace NCoverCop
             {
                 throw new BuildException(e.Message);
             }
+        }
+
+        private NCoverResults SafeOpen(NCoverFileReader reader, string aCoverageFile, Regex partOfPathToKeep)
+        {
+            try
+            {
+                return reader.Open(aCoverageFile, partOfPathToKeep);
+            }
+            catch (Exception)
+            {
+                return new NCoverResults(new INCoverNode[0]);
+            }            
+        }
+
+        private void LLog(Level info, string message)
+        {
+            if (skipLogging)
+            {
+                Console.WriteLine(info.ToString()+ ": " + message);
+                return;
+            }
+            Log(info, message);
         }
 
         internal static double ConvertToPercentage(double value)
