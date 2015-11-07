@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DoubleExtensions.cs" />
     <Compile Include="INCoverNode.cs" />
     <Compile Include="INCoverResults.cs" />
     <Compile Include="INCoverXmlParser.cs" />

@@ -15,49 +15,35 @@ namespace NCoverCop
             this.previous = previous;
         }
 
-        public bool Passed
-        {
-            get
-            {
-                return results.PercentageCovered >= RequiredPercentage ||
-                       results.TotalUnvisited <= RequiredUnvisitedTotal;
-            }
-        }
+        public bool Passed => results.PercentageCovered >= RequiredPercentage ||
+                              results.TotalUnvisited <= RequiredUnvisitedTotal;
 
-        private double RequiredUnvisitedTotal
-        {
-            get
-            {
-                if (previous == null) return 0;
-                return previous.TotalUnvisited;
-            }
-        }
-
+        private double RequiredUnvisitedTotal => previous?.TotalUnvisited ?? 0;
 
         public string Message
         {
             get
             {
-                if (Passed)
-                {
-                    if (results.PercentageCovered >= RequiredPercentage)
-                    {
-                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}\n{4}",
-                            results.Total,
-                            results.TotalVisited, results.PercentageCovered, RequiredPercentage,
-                            results.ReportNewUntestedCode(previous));
-                    }
+                if (results.TotalUnvisited <= RequiredUnvisitedTotal)
                     return
-                        string.Format(
-                            "NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.\n{4}",
-                            results.Total,
-                            results.TotalVisited, results.PercentageCovered, RequiredPercentage,
-                            results.ReportNewUntestedCode(previous));
-                }
+    $@"NCoverCopTask: PASSED: -- There is no newly uncovered code. 
+	Sequence Points Summary: {results.Total} not excluded, {results.TotalVisited} hit
+	Percentage Summary: {results.PercentageCovered:p} [Minimum Required: {RequiredPercentage:p}]
+{results.ReportNewUntestedCode(previous)}";
+
+                if (results.PercentageCovered >= RequiredPercentage)
+                    return
+$@"NCoverCopTask: PASSED: -- WARNING: ** Uncovered code introduced! ** -- but your coverage is better, so I'll let you off.
+	Sequence Points Summary: {results.Total} not excluded, {results.TotalVisited} hit
+	Percentage Summary: {results.PercentageCovered:p} [Minimum Required: {RequiredPercentage:p}]
+{results.ReportNewUntestedCode(previous)}";
+
                 return
-                    string.Format("NCoverCopTask: FAILED: {0} not excluded, {1} hit, {2:p} < {3:p}\n{4}", results.Total,
-                        results.TotalVisited, results.PercentageCovered, RequiredPercentage,
-                        results.ReportNewUntestedCode(previous));
+$@"NCoverCopTask: FAILED: -- WARNING: ** Uncovered code introduced! **
+	Sequence Points Summary: {results.Total} not excluded, {results.TotalVisited} hit
+	Percentage Summary: {results.PercentageCovered:p} [Minimum Required: {RequiredPercentage:p}]
+{results.ReportNewUntestedCode(previous)}";
+
             }
         }
 

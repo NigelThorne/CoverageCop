@@ -1,28 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
     {
-        private readonly List<INCoverNode> unvisited = new List<INCoverNode>();
+        private readonly List<INCoverNode> _unvisited = new List<INCoverNode>();
 
         public NCoverResults(IEnumerable<INCoverNode> nodes)
         {
-            foreach (var node in nodes)
+            foreach (var node in nodes.Where(node => !node.IsExcluded))
             {
-                if (!node.IsExcluded)
-                {
-                    Total++;
+                Total++;
 
-                    if (node.IsVisited)
-                    {
-                        TotalVisited++;
-                    }
-                    else
-                    {
-                        unvisited.Add(node);
-                    }
+                if (node.IsVisited)
+                {
+                    TotalVisited++;
+                }
+                else
+                {
+                    _unvisited.Add(node);
                 }
             }
         }
@@ -31,31 +29,14 @@ namespace NCoverCop
 
         public bool HasMatchingUnvisitedNode(INCoverNode node)
         {
-            foreach (var unvisitedNode in unvisited)
-            {
-                if (unvisitedNode.Matches(node))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _unvisited.Any(unvisitedNode => unvisitedNode.Matches(node));
         }
 
-        public double PercentageCovered
-        {
-            get { return Total == 0 ? 0 : Math.Round(TotalVisited/Total, 5); }
-        }
+        public double PercentageCovered => Total.IsZero() ? 100 : Math.Round(TotalVisited/Total, 5);
 
         public string ReportNewUntestedCode(INCoverResults previous)
         {
-            var nodes = new List<INCoverNode>();
-            foreach (var node in unvisited)
-            {
-                if (!previous.HasMatchingUnvisitedNode(node))
-                {
-                    nodes.Add(node);
-                }
-            }
+            var nodes = _unvisited.Where(node => !previous.HasMatchingUnvisitedNode(node)).ToList();
 
             INCoverNode lastNode = null;
             var condensed = new List<INCoverNode>();
@@ -80,20 +61,12 @@ namespace NCoverCop
             }
             if (lastNode != null) condensed.Add(lastNode);
 
-            var output = "";
-            foreach (var node in condensed)
-            {
-                output += node + "\n";
-            }
-            return output;
+            return condensed.Aggregate("", (current, node) => current + (node + "\n"));
         }
 
         public double Total { get; }
 
-        public double TotalUnvisited
-        {
-            get { return Total - TotalVisited; }
-        }
+        public double TotalUnvisited => Total - TotalVisited;
 
         public double TotalVisited { get; }
 
