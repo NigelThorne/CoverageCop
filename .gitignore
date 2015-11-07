@@ -2,14 +2,6 @@
 /**/bin/Debug
 /**/bin/Release
 /**/obj/
-Tests/bin/Debug/NCoverCop.Tasks.dll
-Tests/bin/Debug/NCoverCop.Tasks.pdb
-Tests/bin/Debug/NCoverCop.Tests.dll
-Tests/bin/Debug/NCoverCop.Tests.pdb
-Tests/obj/Debug/NCoverCop.Tests.csprojResolveAssemblyReference.cache
-Tests/obj/Debug/NCoverCop.Tests.dll
-Tests/obj/Debug/NCoverCop.Tests.pdb
-bin/Debug/NCoverCop.Tasks.dll
-bin/Debug/NCoverCop.Tasks.pdb
-obj/Debug/NCoverCop.Tasks.dll
-obj/Debug/NCoverCop.Tasks.pdb
+/bin/
+/obj/
+/**/*.user
