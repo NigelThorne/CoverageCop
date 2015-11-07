@@ -4,82 +4,61 @@ using System.Text.RegularExpressions;
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
-
 namespace NCoverCop
 {
     [TaskName("ncoverCop")]
     public class NCoverCopTask : Task
     {
-        private string coverageFile;
-        private string previousCoverageFile;
-        private double minPercentage;
-        private bool autoUpdate = true;
-        private string sectionOfFilePathToCompareRegex = ".*";
-        private bool skipLogging = false;
+        private double _minPercentage;
+        private bool _skipLogging;
 
         [TaskAttribute("coverageFile", Required = true)]
         [StringValidator(AllowEmpty = false)]
-        public string CoverageFile
-        {
-            get { return coverageFile; }
-            set { coverageFile = value; }
-        }
+        public string CoverageFile { get; set; }
 
         [TaskAttribute("previousCoverageFile", Required = true)]
         [StringValidator(AllowEmpty = false)]
-        public string PreviousCoverageFile
-        {
-            get { return previousCoverageFile; }
-            set { previousCoverageFile = value; }
-        }
+        public string PreviousCoverageFile { get; set; }
 
         [TaskAttribute("minCoveragePercentage", Required = true)]
         public double MinPercentage
         {
-            get { return ConvertToPercentage(minPercentage); }
-            set { minPercentage = value; }
+            get { return ConvertToPercentage(_minPercentage); }
+            set { _minPercentage = value; }
         }
 
         [TaskAttribute("autoUpdate")]
-        public bool AutoUpdate
-        {
-            get { return autoUpdate; }
-            set { autoUpdate = value; }
-        }
+        public bool AutoUpdate { get; set; } = true;
 
-        [TaskAttributeAttribute("sectionOfFilePathToCompareRegex")]
-        public string SectionOfFilePathToCompareRegex
-        {
-            get { return sectionOfFilePathToCompareRegex; }
-            set { sectionOfFilePathToCompareRegex = value; }
-        }
+        [TaskAttribute("sectionOfFilePathToCompareRegex")]
+        public string SectionOfFilePathToCompareRegex { get; set; } = ".*";
 
         public void ExecuteInTesting()
         {
-            skipLogging = true;
-            this.ExecuteTask();
+            _skipLogging = true;
+            ExecuteTask();
         }
 
         protected override void ExecuteTask()
         {
             try
             {
-                NCoverFileReader reader = new NCoverFileReader();
+                var reader = new NCoverFileReader();
 
-                Threshold threshold =
+                var threshold =
                     new Threshold(
-                        SafeOpen(reader, previousCoverageFile,
-                                    new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
-                        reader.Open(coverageFile,
-                                    new Regex(sectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                        SafeOpen(reader, PreviousCoverageFile,
+                            new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                        reader.Open(CoverageFile,
+                            new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
                         MinPercentage);
 
                 if (threshold.Passed)
                 {
                     LLog(Level.Info, threshold.Message);
-                    if (autoUpdate)
+                    if (AutoUpdate)
                     {
-                        File.Copy(coverageFile, previousCoverageFile, true);
+                        File.Copy(CoverageFile, PreviousCoverageFile, true);
                     }
                 }
                 else
@@ -102,14 +81,14 @@ namespace NCoverCop
             catch (Exception)
             {
                 return new NCoverResults(new INCoverNode[0]);
-            }            
+            }
         }
 
         private void LLog(Level info, string message)
         {
-            if (skipLogging)
+            if (_skipLogging)
             {
-                Console.WriteLine(info.ToString()+ ": " + message);
+                Console.WriteLine(info + ": " + message);
                 return;
             }
             Log(info, message);

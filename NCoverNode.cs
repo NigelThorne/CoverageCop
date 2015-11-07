@@ -5,84 +5,52 @@ namespace NCoverCop
 {
     public class NCoverNode : INCoverNode
     {
-        private readonly int column;
-        private readonly string document;
-        private readonly int endColumn;
-        private readonly int endLine;
-        private readonly bool excluded;
-        private readonly string method;
-        private readonly int methodLineOffset;
-        private readonly string klass;
         private readonly Regex documentPathIgnoreMatcher;
-        private readonly int line;
         private readonly int visitCount;
 
-        public NCoverNode(int line, int column, int endLine, int endColumn, string document, int visitCount, bool excluded, string method, int firstLineOfMethod, string klass, Regex documentPathIgnoreMatcher)
+        public NCoverNode(int line, int column, int endLine, int endColumn, string document, int visitCount,
+            bool excluded, string method, int firstLineOfMethod, string klass, Regex documentPathIgnoreMatcher)
         {
-            this.line = line;
-            this.column = column;
-            this.endLine = endLine;
-            this.endColumn = endColumn;
-            this.document = documentPathIgnoreMatcher.Match(document).Value;
+            Line = line;
+            Column = column;
+            EndLine = endLine;
+            EndColumn = endColumn;
+            Document = documentPathIgnoreMatcher.Match(document).Value;
             this.visitCount = visitCount;
-            this.excluded = excluded;
-            this.method = method;
-            this.klass = klass;
+            IsExcluded = excluded;
+            Method = method;
+            Klass = klass;
             this.documentPathIgnoreMatcher = documentPathIgnoreMatcher;
-            this.methodLineOffset = line - firstLineOfMethod;
+            MethodLineOffset = line - firstLineOfMethod;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{4} {3} \t\t Line {0}-{1} in {2}", Line, EndLine, Document,
+                Method.Substring(Method.LastIndexOf(".") + 1), Klass.Substring(Klass.LastIndexOf(".") + 1));
         }
 
         #region INCoverNode Members
 
-        public bool IsExcluded
-        {
-            get { return excluded; }
-        }
+        public bool IsExcluded { get; }
 
-        public bool IsVisited
-        {
-            get { return visitCount>0; }
-        }
+        public bool IsVisited => visitCount > 0;
 
-        public int Line
-        {
-            get { return line; }
-        }
+        public int Line { get; }
 
-        public int Column
-        {
-            get { return column; }
-        }
+        public int Column { get; }
 
-        public int EndLine
-        {
-            get { return endLine; }
-        }
+        public int EndLine { get; }
 
-        public int EndColumn
-        {
-            get { return endColumn; }
-        }
+        public int EndColumn { get; }
 
-        public string Document
-        {
-            get { return document; }
-        }
+        public string Document { get; }
 
-        public string Method
-        {
-            get { return method; }
-        }
+        public string Method { get; }
 
-        public int MethodLineOffset
-        {
-            get { return methodLineOffset; }
-        }
+        public int MethodLineOffset { get; }
 
-        public string Klass
-        {
-            get { return klass; }
-        }
+        public string Klass { get; }
 
         public bool Matches(INCoverNode ncoverNode)
         {
@@ -102,14 +70,10 @@ namespace NCoverCop
         {
             if (!node.Follows(this)) throw new NotImplementedException();
 
-            return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, excluded, method, methodLineOffset + line, klass, documentPathIgnoreMatcher);
+            return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, IsExcluded, Method,
+                MethodLineOffset + Line, Klass, documentPathIgnoreMatcher);
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return string.Format("{4} {3} \t\t Line {0}-{1} in {2}", Line, EndLine, document, method.Substring(method.LastIndexOf(".") + 1), klass.Substring(klass.LastIndexOf(".") + 1));
-        }
     }
 }

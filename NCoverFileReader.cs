@@ -10,11 +10,11 @@ namespace NCoverCop
 {
     public class NCoverFileReader
     {
-        readonly INCoverXmlParser[] parsers = new INCoverXmlParser[] { new NCoverXmlParserV1(), new NCoverXmlParserV2() };
+        private readonly INCoverXmlParser[] parsers = {new NCoverXmlParserV1(), new NCoverXmlParserV2(), new OpenCoverXmlParser() };
 
         public NCoverResults Open(string coverageFile, Regex partOfPathToKeep)
         {
-            IFileReader reader = SelectReader(coverageFile);
+            var reader = SelectReader(coverageFile);
             if (!reader.Exists(coverageFile))
             {
                 throw new BuildException("The coverageFile specified does not exist");
@@ -24,7 +24,7 @@ namespace NCoverCop
             {
                 //System.Diagnostics.Debugger.Break();
 
-                XmlDocument document = new XmlDocument();
+                var document = new XmlDocument();
                 document.LoadXml(reader.Read(coverageFile));
                 return new NCoverResults(BestParser(document).ParseXmlDocument(document, partOfPathToKeep));
             }
@@ -38,24 +38,26 @@ namespace NCoverCop
 
         private INCoverXmlParser BestParser(XmlNode document)
         {
-            XmlNode node = document.SelectSingleNode("//coverage");
-            string version = XmlNodeHelper.GetStringAttribute("profilerVersion", node);
-            return Int32.Parse(version.Split('.')[0]) >= 2 ? parsers[1] : parsers[0];
+            var node = document.SelectSingleNode("//coverage");
+            if (node == null)
+            {
+                return new OpenCoverXmlParser(); //opencover ? 
+            }
+            var version = XmlNodeHelper.GetStringAttribute("profilerVersion", node);
+            return int.Parse(version.Split('.')[0]) >= 2 ? parsers[1] : parsers[0];
         }
 
         private static bool IsUrl(string location)
         {
-            return location.StartsWith(@"http://", true, CultureInfo.InvariantCulture) || 
-                location.StartsWith(@"https://", true, CultureInfo.InvariantCulture) || 
-                location.StartsWith(@"file://", true, CultureInfo.InvariantCulture);
+            return location.StartsWith(@"http://", true, CultureInfo.InvariantCulture) ||
+                   location.StartsWith(@"https://", true, CultureInfo.InvariantCulture) ||
+                   location.StartsWith(@"file://", true, CultureInfo.InvariantCulture);
         }
 
         private IFileReader SelectReader(string location)
         {
             return IsUrl(location) ? (IFileReader) new WebFileReader() : new LocalFileReader();
         }
-
-        
     }
 
     public interface IFileReader
@@ -68,13 +70,13 @@ namespace NCoverCop
     {
         public string Read(string location)
         {
-            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(location);
+            var httpRequest = (HttpWebRequest) WebRequest.Create(location);
 
-            httpRequest.Timeout = 1000 * 60 * 5;     // 5 minutes
+            httpRequest.Timeout = 1000*60*5; // 5 minutes
             httpRequest.UserAgent = "Code Sample Web Client";
 
-            HttpWebResponse webResponse = (HttpWebResponse)httpRequest.GetResponse();
-            StreamReader responseStream = new StreamReader(webResponse.GetResponseStream());
+            var webResponse = (HttpWebResponse) httpRequest.GetResponse();
+            var responseStream = new StreamReader(webResponse.GetResponseStream());
 
             return responseStream.ReadToEnd();
         }
@@ -83,9 +85,9 @@ namespace NCoverCop
         {
             try
             {
-                HttpWebRequest request = WebRequest.Create(location) as HttpWebRequest;
+                var request = WebRequest.Create(location) as HttpWebRequest;
                 request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                var response = request.GetResponse() as HttpWebResponse;
                 return (response.StatusCode == HttpStatusCode.OK);
             }
             catch

@@ -4,9 +4,9 @@ namespace NCoverCop
 {
     public class Threshold
     {
-        private readonly NCoverResults results;
         private readonly double minPercentage;
         private readonly NCoverResults previous;
+        private readonly NCoverResults results;
 
         public Threshold(NCoverResults previous, NCoverResults results, double minPercentage)
         {
@@ -19,7 +19,8 @@ namespace NCoverCop
         {
             get
             {
-                return results.PercentageCovered >= RequiredPercentage || results.TotalUnvisited <= RequiredUnvisitedTotal;
+                return results.PercentageCovered >= RequiredPercentage ||
+                       results.TotalUnvisited <= RequiredUnvisitedTotal;
             }
         }
 
@@ -39,25 +40,24 @@ namespace NCoverCop
             {
                 if (Passed)
                 {
-                    if(results.PercentageCovered>= RequiredPercentage)
+                    if (results.PercentageCovered >= RequiredPercentage)
                     {
                         return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p}\n{4}",
-                                      results.Total,
-                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage, results.ReportNewUntestedCode(previous));
+                            results.Total,
+                            results.TotalVisited, results.PercentageCovered, RequiredPercentage,
+                            results.ReportNewUntestedCode(previous));
                     }
-                    else
-                    {
-                        return string.Format("NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.\n{4}",
-                                      results.Total,
-                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage, results.ReportNewUntestedCode(previous));                        
-                    }
-                }
-                else
-                {
                     return
-                        string.Format("NCoverCopTask: FAILED: {0} not excluded, {1} hit, {2:p} < {3:p}\n{4}", results.Total,
-                                      results.TotalVisited, results.PercentageCovered, RequiredPercentage, results.ReportNewUntestedCode(previous));
+                        string.Format(
+                            "NCoverCopTask: PASSED: {0} not excluded, {1} hit, {2:p} >= {3:p} but uncovered code has not grown.\n{4}",
+                            results.Total,
+                            results.TotalVisited, results.PercentageCovered, RequiredPercentage,
+                            results.ReportNewUntestedCode(previous));
                 }
+                return
+                    string.Format("NCoverCopTask: FAILED: {0} not excluded, {1} hit, {2:p} < {3:p}\n{4}", results.Total,
+                        results.TotalVisited, results.PercentageCovered, RequiredPercentage,
+                        results.ReportNewUntestedCode(previous));
             }
         }
 

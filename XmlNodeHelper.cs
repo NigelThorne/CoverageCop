@@ -1,6 +1,5 @@
 using System.Xml;
 
-
 namespace NCoverCop
 {
     public class XmlNodeHelper

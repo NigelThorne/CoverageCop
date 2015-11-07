@@ -2,6 +2,7 @@
 /**/bin/Debug
 /**/bin/Release
 /**/obj/
-/bin/
-/obj/
+bin/**
+obj/**
 /**/*.user
+packages/**

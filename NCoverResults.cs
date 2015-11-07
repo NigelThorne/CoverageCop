@@ -1,26 +1,23 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace NCoverCop
 {
     public class NCoverResults : INCoverResults
     {
-        private readonly double total = 0.0;
-        private readonly double totalVisited = 0.0;
         private readonly List<INCoverNode> unvisited = new List<INCoverNode>();
 
         public NCoverResults(IEnumerable<INCoverNode> nodes)
         {
-            foreach (INCoverNode node in nodes)
+            foreach (var node in nodes)
             {
                 if (!node.IsExcluded)
                 {
-                    total++;
+                    Total++;
 
                     if (node.IsVisited)
                     {
-                        totalVisited++;
+                        TotalVisited++;
                     }
                     else
                     {
@@ -34,7 +31,7 @@ namespace NCoverCop
 
         public bool HasMatchingUnvisitedNode(INCoverNode node)
         {
-            foreach (INCoverNode unvisitedNode in unvisited)
+            foreach (var unvisitedNode in unvisited)
             {
                 if (unvisitedNode.Matches(node))
                 {
@@ -46,16 +43,13 @@ namespace NCoverCop
 
         public double PercentageCovered
         {
-            get
-            {
-                return total == 0 ? 0 : Math.Round(totalVisited / total, 5);
-            }
+            get { return Total == 0 ? 0 : Math.Round(TotalVisited/Total, 5); }
         }
 
         public string ReportNewUntestedCode(INCoverResults previous)
         {
-            List<INCoverNode> nodes = new List<INCoverNode>();
-            foreach (INCoverNode node in unvisited)
+            var nodes = new List<INCoverNode>();
+            foreach (var node in unvisited)
             {
                 if (!previous.HasMatchingUnvisitedNode(node))
                 {
@@ -64,8 +58,8 @@ namespace NCoverCop
             }
 
             INCoverNode lastNode = null;
-            List<INCoverNode> condensed = new List<INCoverNode>();
-            foreach (INCoverNode node in nodes)
+            var condensed = new List<INCoverNode>();
+            foreach (var node in nodes)
             {
                 if (lastNode == null)
                 {
@@ -86,28 +80,22 @@ namespace NCoverCop
             }
             if (lastNode != null) condensed.Add(lastNode);
 
-            string output = "";
-            foreach (INCoverNode node in condensed)
+            var output = "";
+            foreach (var node in condensed)
             {
                 output += node + "\n";
             }
             return output;
         }
 
-        public double Total
-        {
-            get { return total; }
-        }
+        public double Total { get; }
 
         public double TotalUnvisited
         {
             get { return Total - TotalVisited; }
         }
 
-        public double TotalVisited
-        {
-            get { return totalVisited; }
-        }
+        public double TotalVisited { get; }
 
         #endregion
     }

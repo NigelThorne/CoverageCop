@@ -8,7 +8,7 @@ namespace NCoverCop
     {
         public List<INCoverNode> ParseXmlDocument(XmlDocument results, Regex partOfPathToKeep)
         {
-            List<INCoverNode> nodes = new List<INCoverNode>();
+            var nodes = new List<INCoverNode>();
             foreach (XmlNode node in results.SelectNodes("//seqpnt"))
             {
                 nodes.Add(ParseNode(node, partOfPathToKeep));
