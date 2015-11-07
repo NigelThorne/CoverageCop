@@ -1,7 +1,0 @@
-D:\code\NCoverCop\bin\Debug\NCoverCop.Tasks.dll
-D:\code\NCoverCop\bin\Debug\NCoverCop.Tasks.pdb
-D:\code\NCoverCop\bin\Debug\NAnt.Core.dll
-D:\code\NCoverCop\bin\Debug\log4net.dll
-D:\code\NCoverCop\obj\Debug\NCoverCop.csprojResolveAssemblyReference.cache
-D:\code\NCoverCop\obj\Debug\NCoverCop.Tasks.dll
-D:\code\NCoverCop\obj\Debug\NCoverCop.Tasks.pdb
