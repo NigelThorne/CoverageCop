@@ -50,7 +50,7 @@ namespace NCoverCop.Tests
         {
             var threshold = new Threshold(_results66Percent, _results50PercentOf4Lines, 0.30);
             Assert.AreEqual(
-                "NCoverCopTask: FAILED: -- WARNING: ** Uncovered code introduced! **\n\tSequence Points Summary: 4 not excluded, 2 hit\n\tPercentage Summary: 50.00% [Minimum Required: 66.67%]\nk m \t\t Line 2-2 in doc\n",
+                "NCoverCopTask: FAILED: -- WARNING: ** Uncovered code introduced! **\r\n\tSequence Points Summary: 4 not excluded, 2 hit\r\n\tPercentage Summary: 50.00% [Minimum Required: 66.67%]\r\nk m \t\t Line 2-2 in doc\r\n",
                 threshold.Message);
         }
 
@@ -58,14 +58,14 @@ namespace NCoverCop.Tests
         public void Message_Pass_WhenNewPercentageBeatsMinThreshold()
         {
             var threshold = new Threshold(_results50PercentOf4Lines, _results100Percent, 0.60);
-            Assert.AreEqual("NCoverCopTask: PASSED: -- There is no newly uncovered code. \n\tSequence Points Summary: 3 not excluded, 3 hit\n\tPercentage Summary: 100.00% [Minimum Required: 60.00%]\n", threshold.Message);
+            Assert.AreEqual("NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 3 not excluded, 3 hit\r\n\tPercentage Summary: 100.00% [Minimum Required: 60.00%]\r\n", threshold.Message);
         }
 
         [Test]
         public void Message_Pass_WhenNewPercentageBeatsMinThresholdAndPreviousPercentage()
         {
             var threshold = new Threshold(_results50PercentOf4Lines, _results100Percent, 0.30);
-            Assert.AreEqual("NCoverCopTask: PASSED: -- There is no newly uncovered code. \n\tSequence Points Summary: 3 not excluded, 3 hit\n\tPercentage Summary: 100.00% [Minimum Required: 50.00%]\n", threshold.Message);
+            Assert.AreEqual("NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 3 not excluded, 3 hit\r\n\tPercentage Summary: 100.00% [Minimum Required: 50.00%]\r\n", threshold.Message);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace NCoverCop.Tests
         {
             var threshold = new Threshold(_results66Percent, _results50PercentOf2Lines, 0.30);
             Assert.AreEqual(
-                "NCoverCopTask: PASSED: -- There is no newly uncovered code. \n\tSequence Points Summary: 2 not excluded, 1 hit\n\tPercentage Summary: 50.00% [Minimum Required: 66.67%]\n",
+                "NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 2 not excluded, 1 hit\r\n\tPercentage Summary: 50.00% [Minimum Required: 66.67%]\r\n",
                 threshold.Message);
         }
 
@@ -86,8 +86,25 @@ namespace NCoverCop.Tests
 
             var threshold = new Threshold(before, after, 0.30);
             Assert.AreEqual(
-                "NCoverCopTask: PASSED: -- WARNING: ** Uncovered code introduced! ** -- but your coverage is better, so I'll let you off.\n\tSequence Points Summary: 5 not excluded, 2 hit\n\tPercentage Summary: 40.00% [Minimum Required: 33.33%]\nk m \t\t Line 4-5 in doc\n",
+                "NCoverCopTask: PASSED: -- WARNING: ** Uncovered code introduced! ** -- but your coverage is better, so I'll let you off.\r\n\tSequence Points Summary: 5 not excluded, 2 hit\r\n\tPercentage Summary: 40.00% [Minimum Required: 33.33%]\r\nk m \t\t Line 4-5 in doc\r\n",
                 threshold.Message);
         }
+
+        [Test]
+        public void Should_Consolidate_Multiple_References_To_The_Same_codepoint_from_multiple_files()
+        {
+            var c1 = new NCoverNode(1, 0, 1, 1, "doc", 0, false, "m", 0, "k", new Regex(".*"));
+            var c2 = new NCoverNode(1, 0, 1, 1, "doc", 1, false, "m", 0, "k", new Regex(".*"));
+
+            Threshold threshold = new Threshold(
+                new NCoverResults(new INCoverNode[] {c1, c2}),
+                new NCoverResults(new INCoverNode[] {c2}),
+                0.0);
+
+            Assert.AreEqual(
+                "NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 1 not excluded, 1 hit\r\n\tPercentage Summary: 100.00% [Minimum Required: 100.00%]\r\nk m \t\t Line 4-5 in doc\r\n",
+                threshold.Message);
+        }
+
     }
 }

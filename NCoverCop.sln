@@ -1,9 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoverCop", "NCoverCop.csproj", "{2274083E-6299-4721-8786-5B794A93C703}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoverCop.Tests", "Tests\NCoverCop.Tests.csproj", "{86D260C0-B7C5-4C17-AD2E-8CBE586146EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NCoverCopRunner", "..\NCoverCopRunner\NCoverCopRunner.csproj", "{E3124F1D-A023-4B3B-B02F-430DF34C88B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +23,10 @@ Global
 		{86D260C0-B7C5-4C17-AD2E-8CBE586146EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86D260C0-B7C5-4C17-AD2E-8CBE586146EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86D260C0-B7C5-4C17-AD2E-8CBE586146EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3124F1D-A023-4B3B-B02F-430DF34C88B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3124F1D-A023-4B3B-B02F-430DF34C88B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3124F1D-A023-4B3B-B02F-430DF34C88B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3124F1D-A023-4B3B-B02F-430DF34C88B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

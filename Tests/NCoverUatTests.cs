@@ -13,7 +13,6 @@ namespace NCoverCop.Tests
             {
                 PreviousCoverageFile = @"./new_NCoverResults.xml",
                 CoverageFile = @"./old_NCoverResults.xml",
-                AutoUpdate = false,
                 MinPercentage = 40,
                 SectionOfFilePathToCompareRegex = @"trunk\\.*"
             };

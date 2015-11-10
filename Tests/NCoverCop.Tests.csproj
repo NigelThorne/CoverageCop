@@ -70,7 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NCoverCopNodeTests.cs" />
+    <Compile Include="FileFilterTests.cs" />
     <Compile Include="NCoverResultsTests.cs" />
     <Compile Include="NCoverNodeTests.cs" />
     <Compile Include="OpenCoverUats.cs" />
@@ -92,6 +92,7 @@
   <ItemGroup>
     <None Include="new_NCoverResults.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="old_NCoverResults.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

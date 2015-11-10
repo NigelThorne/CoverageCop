@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using NAnt.Core;
@@ -6,6 +7,12 @@ using NAnt.Core.Attributes;
 
 namespace NCoverCop
 {
+    public class ExecutionResult
+    {
+        public string Message;
+        public bool Passed;
+    }
+
     [TaskName("ncoverCop")]
     public class NCoverCopTask : Task
     {
@@ -27,49 +34,53 @@ namespace NCoverCop
             set { _minPercentage = value; }
         }
 
+        [Obsolete("feature removed")]
         [TaskAttribute("autoUpdate")]
         public bool AutoUpdate { get; set; } = true;
 
         [TaskAttribute("sectionOfFilePathToCompareRegex")]
         public string SectionOfFilePathToCompareRegex { get; set; } = ".*";
 
-        public void ExecuteInTesting()
+        public bool ExecuteInTesting()
         {
             _skipLogging = true;
-            ExecuteTask();
+            var threshold = InnerExecute();
+            Console.WriteLine(threshold.Message);
+            return threshold.Passed;
         }
 
         protected override void ExecuteTask()
         {
+            Threshold threshold = null;
             try
             {
-                var reader = new NCoverFileReader();
-
-                var threshold =
-                    new Threshold(
-                        SafeOpen(reader, PreviousCoverageFile,
-                            new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
-                        reader.Open(CoverageFile,
-                            new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
-                        MinPercentage);
-
-                if (threshold.Passed)
-                {
-                    LLog(Level.Info, threshold.Message);
-                    if (AutoUpdate)
-                    {
-                        File.Copy(CoverageFile, PreviousCoverageFile, true);
-                    }
-                }
-                else
-                {
-                    throw new BuildException(threshold.Message);
-                }
+                threshold = InnerExecute();
             }
             catch (Exception e)
             {
-                throw new BuildException(e.Message);
+                throw new BuildException(e.Message, e);
             }
+
+            if (threshold?.Passed ?? false)
+            {
+                LLog(Level.Info, threshold.Message);
+            }
+            else
+            {
+                throw new BuildException(threshold?.Message??"");
+            }
+        }
+
+        private Threshold InnerExecute()
+        {
+            var reader = new NCoverFileReader();
+
+            return new Threshold(
+                    SafeOpen(reader, PreviousCoverageFile,
+                        new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                    reader.Open(CoverageFile,
+                        new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                    MinPercentage);
         }
 
         private NCoverResults SafeOpen(NCoverFileReader reader, string aCoverageFile, Regex partOfPathToKeep)

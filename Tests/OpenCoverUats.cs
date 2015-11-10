@@ -13,7 +13,6 @@ namespace NCoverCop.Tests
             {
                 PreviousCoverageFile = @"./old_OpenCoverResults.xml",
                 CoverageFile = @"./new_OpenCoverResults.xml",
-                AutoUpdate = false,
                 MinPercentage = 40,
                 SectionOfFilePathToCompareRegex = @"bond-rx\\.*"
             };
@@ -24,16 +23,7 @@ namespace NCoverCop.Tests
         [Test]
         public void Execute_Task_WithSuccessfulCoverageFiles()
         {
-            try
-            {
-                _task.ExecuteInTesting();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
-            Assert.Fail("Should have complained about drop in coverage.");
+            Assert.IsFalse(_task.ExecuteInTesting(), "Should have complained about drop in coverage.");
         }
     }
 }

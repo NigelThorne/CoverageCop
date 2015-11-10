@@ -1,39 +1,50 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
+using JetBrains.Annotations;
 using NAnt.Core;
 
 namespace NCoverCop
 {
     public class NCoverFileReader
     {
-        private readonly INCoverXmlParser[] parsers = {new NCoverXmlParserV1(), new NCoverXmlParserV2(), new OpenCoverXmlParser() };
+        private readonly INCoverXmlParser[] _parsers = {new NCoverXmlParserV1(), new NCoverXmlParserV2(), new OpenCoverXmlParser() };
 
         public NCoverResults Open(string coverageFile, Regex partOfPathToKeep)
         {
-            var reader = SelectReader(coverageFile);
-            if (!reader.Exists(coverageFile))
+            IEnumerable<string> files = new FileFilter(coverageFile);
+            var results = files.SelectMany(file => NCoverResultsFromFile(file, partOfPathToKeep)).ToArray();
+            if (!results.Any())
             {
                 throw new BuildException("The coverageFile specified does not exist");
             }
+            return new NCoverResults(results);
+        }
+
+        private IEnumerable<INCoverNode> NCoverResultsFromFile(string coverageFile, Regex partOfPathToKeep)
+        {
+            Console.WriteLine($"Scanning: {coverageFile}");
+            var reader = SelectReader(coverageFile);
+            if (!reader.Exists(coverageFile)) return new INCoverNode[0];
 
             try
             {
-                //System.Diagnostics.Debugger.Break();
-
                 var document = new XmlDocument();
                 document.LoadXml(reader.Read(coverageFile));
-                return new NCoverResults(BestParser(document).ParseXmlDocument(document, partOfPathToKeep));
+                return BestParser(document).ParseXmlDocument(document, partOfPathToKeep);
             }
             catch (Exception ex)
             {
                 Console.Out.WriteLine(ex.Message);
             }
 
-            return new NCoverResults(new INCoverNode[0]);
+            return new INCoverNode[0];
         }
 
         private INCoverXmlParser BestParser(XmlNode document)
@@ -44,7 +55,7 @@ namespace NCoverCop
                 return new OpenCoverXmlParser(); //opencover ? 
             }
             var version = XmlNodeHelper.GetStringAttribute("profilerVersion", node);
-            return int.Parse(version.Split('.')[0]) >= 2 ? parsers[1] : parsers[0];
+            return int.Parse(version.Split('.')[0]) >= 2 ? _parsers[1] : _parsers[0];
         }
 
         private static bool IsUrl(string location)
@@ -57,6 +68,41 @@ namespace NCoverCop
         private IFileReader SelectReader(string location)
         {
             return IsUrl(location) ? (IFileReader) new WebFileReader() : new LocalFileReader();
+        }
+    }
+
+    public class FileFilter : IEnumerable<string>
+    {
+        private readonly IEnumerable<string> _files;
+
+        public FileFilter(string coverageFile)
+        {
+            _files = coverageFile.Contains('*') 
+                ? GetMatchingFiles(coverageFile) 
+                : new []{ coverageFile };
+        }
+
+        private IEnumerable<string> GetMatchingFiles([NotNull] string coverageFile)
+        {
+            var searchPattern = Path.GetFileName(coverageFile);
+            if (string.IsNullOrWhiteSpace(searchPattern)) searchPattern = "*.*";
+            var path = Path.GetDirectoryName(coverageFile);
+            if(string.IsNullOrWhiteSpace(path)) path = Directory.GetCurrentDirectory();
+            path = Path.GetFullPath(path);
+            return Directory.GetFileSystemEntries(
+                path: path, 
+                searchPattern: searchPattern, 
+                searchOption: SearchOption.TopDirectoryOnly);
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return _files.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

@@ -55,8 +55,8 @@ namespace NCoverCop
         public bool Matches(INCoverNode ncoverNode)
         {
             return
-                ncoverNode.Method == Method &&
                 ncoverNode.MethodLineOffset == MethodLineOffset &&
+                ncoverNode.Method == Method &&
                 ncoverNode.Klass == Klass;
         }
 
@@ -68,12 +68,11 @@ namespace NCoverCop
 
         public INCoverNode ExtendWith(INCoverNode node)
         {
-            if (!node.Follows(this)) throw new NotImplementedException();
+            if (!node.Follows(this)) throw new InvalidOperationException();
 
             return new NCoverNode(Line, Column, node.EndLine, node.EndColumn, Document, visitCount, IsExcluded, Method,
                 MethodLineOffset + Line, Klass, documentPathIgnoreMatcher);
         }
-
         #endregion
     }
 }

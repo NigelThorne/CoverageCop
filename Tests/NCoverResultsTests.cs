@@ -30,7 +30,7 @@ namespace NCoverCop.Tests
         [Test]
         public void ReportNewUntestedCode_DisplaysUntestedLines()
         {
-            Assert.AreEqual("k m \t\t Line 2-2 in doc1\nk m \t\t Line 5-5 in doc1\n",
+            Assert.AreEqual("k m \t\t Line 2-2 in doc1\r\nk m \t\t Line 5-5 in doc1\r\n",
                 _resultsAll.ReportNewUntestedCode(_results1To1N4To4));
             Assert.AreEqual("", _results1To1N4To4.ReportNewUntestedCode(_resultsAll));
         }
@@ -38,7 +38,7 @@ namespace NCoverCop.Tests
         [Test]
         public void ReportNewUntestedCode_JoinsBlocksOfuntestedCodeIntoASingleEntry()
         {
-            Assert.AreEqual("k m \t\t Line 1-2 in doc1\nk m \t\t Line 4-5 in doc1\n",
+            Assert.AreEqual("k m \t\t Line 1-2 in doc1\r\nk m \t\t Line 4-5 in doc1\r\n",
                 _resultsAll.ReportNewUntestedCode(_resultsNone));
         }
     }
