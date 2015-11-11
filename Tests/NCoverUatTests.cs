@@ -11,8 +11,8 @@ namespace NCoverCop.Tests
         {
             _task = new NCoverCopTask
             {
-                PreviousCoverageFile = @"./new_NCoverResults.xml",
-                CoverageFile = @"./old_NCoverResults.xml",
+                PreviousCoveragePath = @"./new/",
+                CoverageFile = @"./old/NCoverResults.xml",
                 MinPercentage = 40,
                 SectionOfFilePathToCompareRegex = @"trunk\\.*"
             };
@@ -23,15 +23,13 @@ namespace NCoverCop.Tests
         [Test]
         public void Execute_action_condition()
         {
-            _task.PreviousCoverageFile = @"./new_NCoverResults.xml";
-            _task.CoverageFile = @"./old_NCoverResults.xml";
+            _task.PreviousCoveragePath = @"./new/";
+            _task.CoverageFile = @"./old/NCoverResults.xml";
             try
             {
                 _task.ExecuteInTesting();
             }
-// ReSharper disable EmptyGeneralCatchClause
             catch (Exception e)
-// ReSharper restore EmptyGeneralCatchClause
             {
                 Console.Write(e.Message);
             }
@@ -40,15 +38,13 @@ namespace NCoverCop.Tests
         [Test]
         public void Execute2_action_condition()
         {
-            _task.CoverageFile = @"./new_NCoverResults.xml";
-            _task.PreviousCoverageFile = @"./old_NCoverResults.xml";
+            _task.CoverageFile = @"./new/NCoverResults.xml";
+            _task.PreviousCoveragePath = @"./old/";
             try
             {
                 _task.ExecuteInTesting();
             }
-// ReSharper disable EmptyGeneralCatchClause
             catch (Exception e)
-// ReSharper restore EmptyGeneralCatchClause
             {
                 Console.Write(e.Message);
             }
@@ -57,8 +53,8 @@ namespace NCoverCop.Tests
         [Test]
         public void Execute3_action_condition()
         {
-            _task.PreviousCoverageFile =
-                @"http://teamcity:8000/guestAuth/app/rest/builds/buildType:(id:bt68),status:SUCCESS/artifacts/files/ncover/All/Full/merged.xml";
+            _task.PreviousCoveragePath =
+                @"http://teamcity:8000/guestAuth/app/rest/builds/buildType:(id:bt68),status:SUCCESS/artifacts/files/ncover/All/Full/";
             _task.CoverageFile =
                 @"http://teamcity:8000/guestAuth/app/rest/builds/buildType:(id:bt68)/artifacts/files/ncover/All/Full/merged.xml";
             _task.SectionOfFilePathToCompareRegex = @"Bond\\.*";
@@ -66,9 +62,7 @@ namespace NCoverCop.Tests
             {
                 _task.ExecuteInTesting();
             }
-// ReSharper disable EmptyGeneralCatchClause
             catch (Exception e)
-// ReSharper restore EmptyGeneralCatchClause
             {
                 Console.Write(e.Message);
             }

@@ -102,7 +102,7 @@ namespace NCoverCop.Tests
                 0.0);
 
             Assert.AreEqual(
-                "NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 1 not excluded, 1 hit\r\n\tPercentage Summary: 100.00% [Minimum Required: 100.00%]\r\nk m \t\t Line 4-5 in doc\r\n",
+                "NCoverCopTask: PASSED: -- There is no newly uncovered code. \r\n\tSequence Points Summary: 1 not excluded, 1 hit\r\n\tPercentage Summary: 100.00% [Minimum Required: 100.00%]\r\n",
                 threshold.Message);
         }
 

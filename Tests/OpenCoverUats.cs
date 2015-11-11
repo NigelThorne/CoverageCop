@@ -11,8 +11,8 @@ namespace NCoverCop.Tests
         {
             _task = new NCoverCopTask
             {
-                PreviousCoverageFile = @"./old_OpenCoverResults.xml",
-                CoverageFile = @"./new_OpenCoverResults.xml",
+                PreviousCoveragePath = @"./old/",
+                CoverageFile = @"./new/OpenCoverResults.xml",
                 MinPercentage = 40,
                 SectionOfFilePathToCompareRegex = @"bond-rx\\.*"
             };

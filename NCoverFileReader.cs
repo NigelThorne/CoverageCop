@@ -16,9 +16,8 @@ namespace NCoverCop
     {
         private readonly INCoverXmlParser[] _parsers = {new NCoverXmlParserV1(), new NCoverXmlParserV2(), new OpenCoverXmlParser() };
 
-        public NCoverResults Open(string coverageFile, Regex partOfPathToKeep)
+        public NCoverResults Read(IEnumerable<string> files, Regex partOfPathToKeep)
         {
-            IEnumerable<string> files = new FileFilter(coverageFile);
             var results = files.SelectMany(file => NCoverResultsFromFile(file, partOfPathToKeep)).ToArray();
             if (!results.Any())
             {

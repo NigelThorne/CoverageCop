@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using NAnt.Core;
 using NAnt.Core.Attributes;
@@ -23,9 +25,9 @@ namespace NCoverCop
         [StringValidator(AllowEmpty = false)]
         public string CoverageFile { get; set; }
 
-        [TaskAttribute("previousCoverageFile", Required = true)]
+        [TaskAttribute("previousCoveragePath", Required = true)]
         [StringValidator(AllowEmpty = false)]
-        public string PreviousCoverageFile { get; set; }
+        public string PreviousCoveragePath { get; set; }
 
         [TaskAttribute("minCoveragePercentage", Required = true)]
         public double MinPercentage
@@ -74,20 +76,22 @@ namespace NCoverCop
         private Threshold InnerExecute()
         {
             var reader = new NCoverFileReader();
+            var partOfPathToKeep = new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase);
+
+            IEnumerable<string> currentCoverageFiles = new FileFilter(CoverageFile);
+            var previousCoverageFiles = currentCoverageFiles.Select(Path.GetFileName).Select(f => Path.Combine(PreviousCoveragePath, f));
 
             return new Threshold(
-                    SafeOpen(reader, PreviousCoverageFile,
-                        new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
-                    reader.Open(CoverageFile,
-                        new Regex(SectionOfFilePathToCompareRegex, RegexOptions.IgnoreCase)),
+                    SafeRead(reader, previousCoverageFiles, partOfPathToKeep),
+                    reader.Read(currentCoverageFiles, partOfPathToKeep),
                     MinPercentage);
         }
 
-        private NCoverResults SafeOpen(NCoverFileReader reader, string aCoverageFile, Regex partOfPathToKeep)
+        private static NCoverResults SafeRead(NCoverFileReader reader, IEnumerable<string> coverageFiles, Regex partOfPathToKeep)
         {
             try
             {
-                return reader.Open(aCoverageFile, partOfPathToKeep);
+                return reader.Read(coverageFiles, partOfPathToKeep);
             }
             catch (Exception)
             {

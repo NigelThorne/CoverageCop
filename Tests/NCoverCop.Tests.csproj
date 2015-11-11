@@ -90,15 +90,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="new_NCoverResults.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="old_NCoverResults.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
@@ -116,16 +107,17 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="new_OpenCoverResults.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="old_OpenCoverResults.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="new\NCoverResults.xml" />
+    <None Include="new\OpenCoverResults.xml" />
+    <None Include="old\NCoverResults.xml" />
+    <None Include="old\OpenCoverResults.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy  $(ProjectDir)new $(ProjectDir)$(OutDir)new\ /O /X /E /H /K /Y
+xcopy  $(ProjectDir)old $(ProjectDir)$(OutDir)old\ /O /X /E /H /K /Y
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
